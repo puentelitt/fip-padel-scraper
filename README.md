@@ -30,12 +30,17 @@ Ties are preserved (two players at #1, two at #3, …). Rows are de-duped by
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/playwright install chromium
+
+# 1. Scrape the ranking (needs the browser)
 .venv/bin/python fip_scraper.py
+
+# 2. Enrich with per-player bio data (plain HTTP, no browser)
+.venv/bin/python enrich_players.py
 ```
 
 ## Output
 
-`fip_men_ranking.csv` with columns:
+### `fip_men_ranking.csv` — the ranking
 
 | column | notes |
 |--------|-------|
@@ -47,3 +52,22 @@ python3 -m venv .venv
 
 The script prints how many rows were actually captured and says so plainly if
 it's fewer than 300.
+
+### `fip_men_ranking_enriched.csv` — ranking + biographical data
+
+`enrich_players.py` reads the ranking CSV and fetches each player's profile page
+(the bio is in the static HTML, so it uses concurrent `requests` — no browser).
+It adds these columns from the "Detalles del jugador" block:
+
+| column | source | example |
+|--------|--------|---------|
+| birthdate | Edad | `08/03/2002` |
+| age | Edad | `24` |
+| place_of_birth | Lugar de nacimiento | `Valladolid` |
+| height_m | Altura | `1.90` |
+| playing_side | Posición de Juego | `Right` / `Left` |
+
+The site uses `--` as a placeholder for unknown values; those are left blank.
+Not every player has every field filled in on FIP, so coverage is partial for
+`place_of_birth`, `height_m`, and `playing_side` — the script prints exact
+coverage counts after running.
