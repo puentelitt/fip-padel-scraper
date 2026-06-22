@@ -36,7 +36,26 @@ python3 -m venv .venv
 
 # 2. Enrich with per-player bio data (plain HTTP, no browser)
 .venv/bin/python enrich_players.py
+
+# 3. Build the dashboard, then open index.html in any browser
+.venv/bin/python build_dashboard.py
+open index.html
 ```
+
+## Dashboard
+
+`build_dashboard.py` embeds the enriched CSV into a single self-contained
+`index.html` (no server, no build step — just open it). It lets you:
+
+- **Search** by player name
+- Filter by **nationality** (multi-select, with per-country counts)
+- Filter by **playing side** (Right / Left / All)
+- Filter by **age** range (min / max)
+- Filter by **height** (taller ≥ / shorter ≤, in metres)
+- **Sort** by any column (click the header)
+- Open each player's **FIP profile** in a new tab
+
+Re-run `build_dashboard.py` whenever the CSV is refreshed.
 
 ## Output
 
